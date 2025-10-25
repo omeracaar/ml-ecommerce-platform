@@ -1,0 +1,4 @@
+bir dataset buldum gereksiz sütünları işleme almadım 
+verilerin yüzde 80 ini modelden sakladım overfitting yaşamamak için kalan yüzde 20 yi test verisi olarak kullandım 
+model Kişiselleştirilmiş İşbirlikçi Filtreleme
+Personalized Collaborative Filtering

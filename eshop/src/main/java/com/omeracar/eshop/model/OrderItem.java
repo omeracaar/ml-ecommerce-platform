@@ -17,15 +17,10 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * Bu sipariş öğesinin ait olduğu SİPARİŞ (Many-to-One).
-     * Bu taraf ilişkinin sahibidir, 'order_items' tablosuna 'order_id' kolonu eklenir.
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     @JsonIgnore
-    private Order order; // Order.java'yı az önce oluşturduk
-
+    private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -34,7 +29,6 @@ public class OrderItem {
     @Column(nullable = false)
     private int quantity;
 
-    //urunun satin alindigi zamanki fiyatı zam gelse dahi zarar etmeyiz
     @Column(name = "price_at_purchase", nullable = false)
     private double priceAtPurchase;
 

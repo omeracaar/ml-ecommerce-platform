@@ -1,6 +1,5 @@
-package com.omeracar.eshop.controller.product;
+package com.omeracar.eshop.controller;
 
-import com.omeracar.eshop.controller.RootEntity;
 import com.omeracar.eshop.dto.product.CreateProductRequestDto;
 import com.omeracar.eshop.dto.product.ProductResponseDto;
 import com.omeracar.eshop.dto.product.UpdateProductRequestDto;

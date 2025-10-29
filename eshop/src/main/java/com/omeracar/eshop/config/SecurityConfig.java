@@ -52,18 +52,14 @@ public class SecurityConfig {
                         .requestMatchers("/rest/api/products/admin/**").hasRole("ADMIN")
                         .requestMatchers("/rest/api/categories/admin/**").hasRole("ADMIN")
                         .requestMatchers("/rest/api/admin/**").hasRole("ADMIN")
-
                         .anyRequest().authenticated()
                 )
-
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint)
                 )
-
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

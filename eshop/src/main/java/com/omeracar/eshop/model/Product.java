@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class Product {
 
     @Id
-    private String id; // ML modeliyle ('P-12345') eşleşmesi için Long değil, String
+    private String id;
 
     @Column(nullable = false)
     private String name;

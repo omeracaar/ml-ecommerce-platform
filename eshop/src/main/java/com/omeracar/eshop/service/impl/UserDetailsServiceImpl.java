@@ -28,42 +28,42 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     // @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.info("loadUserByUsername çağrıldı. Aranan username: {}", username);
+        logger.info("loadUserByUsername cagirildi. aranan username: {}", username);
         try {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> {
-                        logger.warn("Kullanıcı bulunamadı: {}", username);
+                        logger.warn("user bulunamadi: {}", username);
                         return new UsernameNotFoundException("User not found with username: " + username);
                     });
-            logger.debug("Kullanıcı DB'den bulundu: {}", user.getUsername());
+            logger.debug("user db de bulundu: {}", user.getUsername());
 
             if (user.getRole() == null) {
-                logger.error("Kullanıcının rolü null! Kullanıcı ID: {}", user.getId());
-                throw new IllegalStateException("Kullanıcının rolü null olamaz.");
+                logger.error("kullanici rolu null user id: {}", user.getId());
+                throw new IllegalStateException("kullanici rolu null olamaz.");
             }
-            logger.debug("Kullanıcının rolü: {}", user.getRole().name());
+            logger.debug("kullanicinin rolu: {}", user.getRole().name());
 
             GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
             Collection<GrantedAuthority> authorities = Collections.singletonList(authority);
-            logger.debug("GrantedAuthority oluşturuldu: {}", authority.getAuthority());
+            logger.debug("GrantedAuthority olsturuldu: {}", authority.getAuthority());
 
             if (user.getPassword() == null) {
-                logger.error("Kullanıcının şifresi null! Kullanıcı ID: {}", user.getId());
-                throw new IllegalStateException("Kullanıcının şifresi null olamaz.");
+                logger.error("kullanici sifresi null user id: {}", user.getId());
+                throw new IllegalStateException("kullanici sifresi null olamaz");
             }
 
             UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                     user.getUsername(),
                     user.getPassword(),
                     authorities);
-            logger.info("UserDetails nesnesi başarıyla oluşturuldu for {}", username);
+            logger.info("UserDetails nesnesi {} icin basariyla olusturuldu", username);
             return userDetails;
 
         } catch (UsernameNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            logger.error("loadUserByUsername içinde BEKLENMEDİK HATA oluştu!", e);
-            throw new RuntimeException("Kullanıcı yüklenirken hata: " + e.getMessage(), e);
+            logger.error("loadUserByUsername içinde beklenmedik hata olustu", e);
+            throw new RuntimeException("user yuklenirken hata: " + e.getMessage(), e);
         }
     }
 }

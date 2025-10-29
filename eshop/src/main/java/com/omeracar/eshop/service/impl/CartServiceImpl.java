@@ -15,6 +15,7 @@ import com.omeracar.eshop.repository.CartRepository;
 import com.omeracar.eshop.repository.ProductRepository;
 import com.omeracar.eshop.repository.UserRepository;
 import com.omeracar.eshop.service.ICartService;
+import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,10 @@ public class CartServiceImpl implements ICartService {
 
     @Autowired
     private UserRepository userRepository;
+
+    //removeCartItem methodunda sikinti yasadigim icin ekledim
+    @Autowired
+    private EntityManager entityManager;
 
     private User getCurrentUser(){
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
@@ -159,7 +164,7 @@ public class CartServiceImpl implements ICartService {
     }
 
     @Override
-    public CartResponseDto updateCartItemQuantity(Long cartItemId, int quantity) {
+    public CartResponseDto updateCartItemQuantity(Long cartItemId, Integer quantity) {
         if (quantity<1){
             throw new BadRequestException("miktar en az 1 olmali, silme islemi icin delete endpoint kullan");
         }
@@ -193,21 +198,27 @@ public class CartServiceImpl implements ICartService {
     @Override
     @Transactional
     public CartResponseDto removeCartItem(Long cartItemId) {
-        User currentUser=getCurrentUser();
-        Cart cart=getOrCreateCartForUser(currentUser);
+        User currentUser = getCurrentUser();
+        Cart cart = getOrCreateCartForUser(currentUser);
+        logger.debug("removeCartItem cagirildi. User: {}, cart ID: {}, removeCartItem ID: {}",
+                currentUser.getUsername(), cart.getId(), cartItemId);
 
-        CartItem cartItem=cartItemRepository.findById(cartItemId)
-                .orElseThrow(()->new ResourceNotFoundException("CartItem","id",cartItemId));
-        if (!cartItem.getCart().getId().equals(cart.getId())){
-            logger.warn("farkli kullanicinin sepetini silmeye yetkiniz yok. User:{}, istenen item id: {}",currentUser.getUsername(),cartItemId);
-            throw new BadRequestException("Bu sepeti silme yetkiniz yok.",MessageType.FORBIDDEN);
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItemId));
+
+        if (!cartItem.getCart().getId().equals(cart.getId())) {
+            throw new BadRequestException("Bu cartItem'i silme yetkiniz yok.", MessageType.FORBIDDEN);
         }
-
-        cartItemRepository.delete(cartItem);
-        logger.info("sepet itemi: {} silindi (User: {}",cartItemId,currentUser.getUsername());
-
-        Cart updatedCart =cartRepository.findById(cart.getId()).orElse(cart);
-        return convertToDto(updatedCart);
+        try {
+            cartItemRepository.delete(cartItem);
+            //!!!!!!!!! yapilan degisiklikleri hemen yapmaya zorla
+            //aksi takdirde cartItem silmiyor
+            entityManager.flush();
+            entityManager.refresh(cart);
+        } catch (Exception e) {
+            throw new RuntimeException("cartItem silinirken veritabanı hatası oluştu.", e);
+        }
+        return convertToDto(cart);
     }
 
     @Override
@@ -216,11 +227,24 @@ public class CartServiceImpl implements ICartService {
         User currentUser=getCurrentUser();
         Cart cart=getOrCreateCartForUser(currentUser);
 
-        //sepetteki tum itemleri sil
-        cartItemRepository.deleteAll(cart.getCartItems());
-        logger.info("User: '{}' sepeti temizlendi.",currentUser.getUsername());
+        List<CartItem> itemsToDelete = cart.getCartItems();
+        if (itemsToDelete != null && !itemsToDelete.isEmpty()) {
+            logger.debug("sepette {} adet item silinecek", itemsToDelete.size());
 
-        cart.setCartItems(new ArrayList<>());
-        return convertToDto(cart);
+            cartItemRepository.deleteAllInBatch(itemsToDelete); // deleteAll yapinca rollback e dusuyor
+            entityManager.flush();//db ye delete islemini hemen at dedim
+        }
+
+        logger.info("User '{}' sepeti temizlendi.", currentUser.getUsername());
+
+        //ne olur ne olmaz :)
+        CartResponseDto emptyCartDto = new CartResponseDto();
+        emptyCartDto.setId(cart.getId());
+        emptyCartDto.setUserId(currentUser.getId());
+        emptyCartDto.setCartItems(new ArrayList<>());
+        emptyCartDto.setTotalPrice(0.0);
+        emptyCartDto.setTotalItems(0);
+        return emptyCartDto;
+
     }
 }

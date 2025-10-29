@@ -16,9 +16,9 @@ public interface IRestProductController {
 
     ResponseEntity<RootEntity<Page<ProductResponseDto>>> getProductsByCategory(Long categoryId, Pageable pageable);
 
-    ResponseEntity<RootEntity<ProductResponseDto>> addProduct(@Valid CreateProductRequestDto createDto);
+    ResponseEntity<RootEntity<ProductResponseDto>> addProduct(CreateProductRequestDto createDto);
 
-    ResponseEntity<RootEntity<ProductResponseDto>> updateProduct(String id, @Valid UpdateProductRequestDto updateDto);
+    ResponseEntity<RootEntity<ProductResponseDto>> updateProduct(String id,UpdateProductRequestDto updateDto);
 
     ResponseEntity<RootEntity<Void>> deleteProduct(String id);
 

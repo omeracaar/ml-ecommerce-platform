@@ -8,6 +8,8 @@ import com.omeracar.eshop.dto.cart.CartResponseDto;
 import com.omeracar.eshop.service.impl.CartServiceImpl;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,11 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/rest/api/cart")
-@Validated
 public class RestCartControllerImpl extends RestBaseController implements IRestCartController {
 
-    //endpoint adları duzenlenicek
-
+    private static final Logger logger= LoggerFactory.getLogger(RestCartControllerImpl.class);
 
     @Autowired
     private CartServiceImpl cartService;
@@ -40,10 +40,8 @@ public class RestCartControllerImpl extends RestBaseController implements IRestC
     }
 
     @Override
-    @GetMapping("/items/{cartItemId}")
-    public ResponseEntity<RootEntity<CartResponseDto>> updateItemQuantity(
-            @PathVariable Long cartItemId,
-            @RequestParam @Min(value = 1,message = "miktar en az 1 olmali") Integer quantity) {
+    @PutMapping("/items/{cartItemId}")
+    public ResponseEntity<RootEntity<CartResponseDto>> updateItemQuantity(@PathVariable("cartItemId") Long cartItemId,Integer quantity) {
         CartResponseDto updatedCart=cartService.updateCartItemQuantity(cartItemId,quantity);
         return ok(updatedCart);
     }
@@ -51,7 +49,7 @@ public class RestCartControllerImpl extends RestBaseController implements IRestC
     @Override
     @DeleteMapping("/items/{cartItemId}")
     public ResponseEntity<RootEntity<CartResponseDto>> removeItemFromCart(
-            @PathVariable Long cartItemId) {
+            @PathVariable("cartItemId") Long cartItemId) {
         CartResponseDto updatedCart=cartService.removeCartItem(cartItemId);
         return ok(updatedCart);
     }

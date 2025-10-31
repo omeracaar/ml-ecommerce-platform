@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 public interface IRestProductController {
 
     ResponseEntity<RootEntity<Page<ProductResponseDto>>> getAllProducts(Pageable pageable);
@@ -21,5 +23,7 @@ public interface IRestProductController {
     ResponseEntity<RootEntity<ProductResponseDto>> updateProduct(String id,UpdateProductRequestDto updateDto);
 
     ResponseEntity<RootEntity<Void>> deleteProduct(String id);
+
+    ResponseEntity<RootEntity<List<ProductResponseDto>>> getRecommendationsForCurrentUser();
 
 }

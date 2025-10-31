@@ -78,3 +78,9 @@ INSERT INTO carts (user_id) VALUES
 ('U-ADMIN'),
 ('U-1'),
 ('U-2');
+
+INSERT INTO products (id, name, description, price, stock_quantity, image_url, category_id) VALUES
+('P248229', 'Önerilen Ürün 1', 'ML Modelinden Geldi', 100.00, 10, 'https://picsum.photos/seed/rec1/400', 3);
+
+INSERT INTO products (id, name, description, price, stock_quantity, image_url, category_id) VALUES
+('P211187', 'Önerilen Ürün 2', 'Bu da ML denemesi', 250.00, 5, 'https://picsum.photos/seed/rec2/400', 5);

@@ -8,6 +8,7 @@ import com.omeracar.eshop.dto.product.ProductResponseDto;
 import com.omeracar.eshop.dto.product.UpdateProductRequestDto;
 import com.omeracar.eshop.exception.ResourceNotFoundException;
 import com.omeracar.eshop.service.IProductService;
+import com.omeracar.eshop.service.IRecommendationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,12 +16,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("rest/api/products")
 public class RestProductController extends RestBaseController implements IRestProductController {
 
     @Autowired
     private IProductService iProductService;
+
+    @Autowired
+    private IRecommendationService recommendationService;
 
 
     @Override
@@ -68,5 +74,12 @@ public class RestProductController extends RestBaseController implements IRestPr
     public ResponseEntity<RootEntity<Void>> deleteProduct(@PathVariable String id) {
         iProductService.deleteProduct(id);
         return noContent();
+    }
+
+    @Override
+    @GetMapping("/recommendations")
+    public ResponseEntity<RootEntity<List<ProductResponseDto>>> getRecommendationsForCurrentUser() {
+        List<ProductResponseDto> recommendations=recommendationService.getRecommendationsForCurrentUser();
+        return ok(recommendations);
     }
 }

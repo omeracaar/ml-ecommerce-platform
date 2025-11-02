@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("rest/api/products")
-public class RestProductController extends RestBaseController implements IRestProductController {
+public class RestProductControllerImpl extends RestBaseController implements IRestProductController {
 
     @Autowired
     private IProductService iProductService;

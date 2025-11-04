@@ -76,7 +76,7 @@ function App() {
             </div>
           ))
         ) : (
-          <p>Ürün bulunamadı (veya `data.sql`'de ürün yok).</p>
+          <p>Ürün bulunamadı (veya `data.sql`'de ürün yok)</p>
         )}
       </div>
     </div>

@@ -2,7 +2,7 @@ import pandas as pd
 
 # --- AŞAMA 1: VERİYİ HAZIRLAMA (Senin Kodun) ---
 
-df = pd.read_csv("C:/Users/omera/Desktop/python.py/ecommerce_sales_34500.csv")
+df = pd.read_csv("C:/Users/omera/Desktop/bt1/python.py/ecommerce_sales_34500.csv")
 # print(df.head()) # Bu satırı yoruma aldım, artık tabloyu görmemize gerek yok
 
 print("\nVeri başarıyla okundu. Şimdi ML modeli için hazırlanıyor...")
@@ -21,7 +21,6 @@ try:
     from surprise import accuracy # Hata payını ölçmek için
 except ImportError:
     print("\n'surprise' kütüphanesi bulunamadı.")
-    print("Lütfen terminale 'pip install scikit-surprise' yazarak kurun ve script'i tekrar çalıştırın.")
     exit()
 
 # 4. Reader'ı tanımlayalım
@@ -31,7 +30,7 @@ reader = Reader(rating_scale=(df_ml['rating'].min(), df_ml['rating'].max()))
 data = Dataset.load_from_df(df_ml[['customer_id', 'product_id', 'rating']], reader)
 print("\nVeri, 'Surprise' kütüphanesi için başarıyla hazırlandı!")
 
-# --- AŞAMA 2: EĞİTİM & TEST (Senin Fikrin) ---
+# --- AŞAMA 2: EĞİTİM & TEST---
 
 # 1. Veriyi %80 eğitim, %20 test olarak ayıralım (test_size=0.20)
 # random_state=42 : her çalıştırmada aynı "rastgele" sonucu alalım ki karşılaştırabilelim

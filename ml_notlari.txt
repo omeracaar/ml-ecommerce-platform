@@ -2,3 +2,13 @@ bir dataset buldum gereksiz sütünları işleme almadım
 verilerin yüzde 80 ini modelden sakladım overfitting yaşamamak için kalan yüzde 20 yi test verisi olarak kullandım 
 model Kişiselleştirilmiş İşbirlikçi Filtreleme
 Personalized Collaborative Filtering
+
+Profil Çıkarma: Senin customer_id'ne (diyelim C-10) bakar. Senin geçmişte aldığın tüm ürünleri (P-101, P-205, P-301) ve onlara verdiğin "puanları" (bizim quantity dediğimiz) öğrenir.
+
+Benzerleri Bulma: Tüm kullanıcılar arasında (34.000 satırda) gezer ve "Zevkleri C-10'a en çok benzeyen diğer kullanıcılar kimler?" diye sorar.
+
+Bulgu: Model, C-50 ve C-80 ID'li kullanıcıların da senin gibi P-101 ve P-301 ürünlerini çok sevdiğini fark eder.
+
+Öneri: Model, bu C-50 ve C-80 kullanıcılarının yakın zamanda P-777 (diyelim ki "Akıllı Saat") aldığını ve buna yüksek puan verdiğini (quantity=çok) görür.
+
+Karar: Model sana döner ve der ki: "Senin P-777 (Akıllı Saat) ürününden haberin bile yok. Ama zevklerine çok güvendiğim kankaların (C-50 ve C-80) bu ürünü alıp bayıldılar. Muhtemelen sen de seversin. Al, bunu öneriyorum."

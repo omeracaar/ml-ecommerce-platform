@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
+import AddressSelector from '../components/AddressSelector';
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -111,10 +112,13 @@ function RegisterPage() {
           <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} style={inputStyle} />
         </div>
 
-        {/* adres */}
-        <div style={formGroupStyle}>
-          <label>Adres</label>
-          <textarea name="address" value={formData.address} onChange={handleChange} style={{ ...inputStyle, height: '80px' }} />
+        {/* YENİSİ: */}
+        <div style={{ marginBottom: '15px', border: '1px solid #eee', padding: '10px', borderRadius: '5px' }}>
+          <h4 style={{marginTop:0}}>Adres Bilgileri (İsteğe Bağlı)</h4>
+          <AddressSelector onAddressChange={(fullAddr) => {
+            // Gelen birleşmiş adresi formData'ya set et
+            setFormData(prev => ({ ...prev, address: fullAddr }));
+          }} />
         </div>
 
         <button type="submit" style={buttonStyle}>Kayıt Ol</button>

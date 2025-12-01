@@ -55,7 +55,7 @@ function LoginPage() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required 
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+            style={{ width: '100%', padding: '8px', marginTop: '5px, ', boxSizing: 'border-box' }}
           />
         </div>
         <div style={{ marginBottom: '15px' }}>
@@ -65,7 +65,7 @@ function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required 
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+            style={{ width: '100%', padding: '8px', marginTop: '5px',boxSizing: 'border-box' }}
           />
         </div>
         

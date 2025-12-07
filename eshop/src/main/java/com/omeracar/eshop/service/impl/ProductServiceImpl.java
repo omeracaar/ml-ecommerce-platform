@@ -36,6 +36,7 @@ public class ProductServiceImpl implements IProductService {
         dto.setStockQuantity(product.getStockQuantity());
         dto.setImageUrl(product.getImageUrl());
         // Category null değilse adını ve id sini al
+        dto.setBrand(product.getBrand());
         if (product.getCategory() != null) {
             dto.setCategoryName(product.getCategory().getName());
             dto.setCategoryId(product.getCategory().getId());

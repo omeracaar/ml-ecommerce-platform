@@ -13,4 +13,5 @@ public class ProductResponseDto {
     private String imageUrl;
     private String categoryName; // Category ID yerine adını gösterelim
     private Long categoryId; //frontennde belki ihtiyacım olur
+    private String brand;
 }

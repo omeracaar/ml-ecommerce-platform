@@ -97,7 +97,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public AuthResponseDto loginUser(LoginRequestDto loginDto) {
-        logger.info("loginUser metodu başladı. Kullanıcı adı: {}", loginDto.getUsername());
+        logger.debug("loginUser metodu başladı. Kullanıcı adı: {}", loginDto.getUsername());
         try {
             logger.debug("AuthenticationManager.authenticate çağrılacak...");
             Authentication authentication = authenticationManager.authenticate(
@@ -106,14 +106,14 @@ public class AuthServiceImpl implements IAuthService {
                             loginDto.getPassword()
                     )
             );
-            logger.info("AuthenticationManager.authenticate BAŞARILI.");
+            logger.debug("AuthenticationManager.authenticate BAŞARILI.");
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             logger.debug("SecurityContext'e authentication set edildi.");
 
             logger.debug("JwtTokenProvider.generateToken çağrılacak...");
             String jwt = jwtTokenProvider.generateToken(authentication);
-            logger.info("JWT başarıyla oluşturuldu.");
+            logger.debug("JWT başarıyla oluşturuldu.");
 
             String username;
             if (authentication.getPrincipal() instanceof UserDetails userDetails) {
@@ -133,7 +133,7 @@ public class AuthServiceImpl implements IAuthService {
             logger.debug("Kullanıcı DB'den bulundu. ID: {}", user.getId());
 
             AuthResponseDto responseDto = new AuthResponseDto(jwt, "Bearer ", user.getId(), user.getUsername());
-            logger.info("AuthResponseDto oluşturuldu. Login başarılı.");
+            logger.debug("AuthResponseDto oluşturuldu. Login başarılı.");
             return responseDto;
 
         } catch (BadCredentialsException e) {

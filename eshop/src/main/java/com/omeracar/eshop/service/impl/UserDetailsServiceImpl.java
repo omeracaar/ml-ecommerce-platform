@@ -28,7 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     // @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.info("loadUserByUsername cagirildi. aranan username: {}", username);
+        logger.debug("loadUserByUsername cagirildi. aranan username: {}", username);
         try {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> {
@@ -56,7 +56,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     user.getUsername(),
                     user.getPassword(),
                     authorities);
-            logger.info("UserDetails nesnesi {} icin basariyla olusturuldu", username);
+            logger.debug("UserDetails nesnesi {} icin basariyla olusturuldu", username);
             return userDetails;
 
         } catch (UsernameNotFoundException e) {

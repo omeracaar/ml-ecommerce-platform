@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import api from '../api'; 
 import { useNavigate } from 'react-router-dom';
 
+
+
 function AdminOrdersPage() {
-  const [orders, setOrders] = useState([]); // Başlangıç her zaman boş dizi
+  const [orders, setOrders] = useState([]); 
   const [loading, setLoading] = useState(true);
   
   const statusOptions = ["PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"];
@@ -14,27 +16,22 @@ function AdminOrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      // Backend: /rest/api/orders/admin (Senin controllera göre path bu olmalı)
-      // Controllerda @RequestMapping("/rest/api/orders") ve metodda @GetMapping("/admin") var.
       const response = await api.get('/orders/admin');
       
-      console.log("Admin API Yanıtı:", response.data); // Konsola basıp yapıyı görelim
+      console.log("Admin API Yanıtı:", response.data); 
 
-      // GÜVENLİ VERİ ÇEKME (Defensive Programming)
       let incomingData = [];
 
       if (response.data && response.data.payload) {
-        // Eğer Page yapısı varsa 'content' içindedir
         if (response.data.payload.content) {
             incomingData = response.data.payload.content;
         } 
-        // Eğer direkt liste ise 'payload' kendisidir
         else if (Array.isArray(response.data.payload)) {
             incomingData = response.data.payload;
         }
       }
 
-      setOrders(incomingData || []); // Asla null set etme, boş dizi olsun
+      setOrders(incomingData || []); 
       
     } catch (error) {
       console.error("Admin siparişleri çekilemedi:", error);
@@ -49,7 +46,7 @@ function AdminOrdersPage() {
         params: { status: newStatus }
       });
 
-      // State güncelleme
+      //state güncelleme
       setOrders(prevOrders => 
         prevOrders.map(order => 
           order.id === orderId ? { ...order, orderStatus: newStatus } : order
@@ -85,7 +82,7 @@ function AdminOrdersPage() {
             </tr>
           </thead>
           <tbody>
-            {/* orders dizisi boşsa bile map hata vermez, ama null ise verir. Yukarıda önlemini aldık. */}
+
             {orders && orders.length > 0 ? (
                 orders.map((order) => (
                 <tr key={order.id} style={{ borderBottom: '1px solid #dee2e6' }}>
@@ -94,7 +91,7 @@ function AdminOrdersPage() {
                     <td style={tdStyle}>{order.username || order.userId}</td>
                     
                     <td style={tdStyle}>
-                        {/* Tarih null gelirse patlamasın diye kontrol */}
+                        {/*tarih null gelirse patlamasin diye kontrol*/}
                         {order.createdDate || order.orderDate 
                             ? new Date(order.createdDate || order.orderDate).toLocaleDateString('tr-TR') 
                             : '-'}
@@ -138,7 +135,8 @@ function AdminOrdersPage() {
   );
 }
 
-// Stiller aynı kalabilir
+
+
 const thStyle = { padding: '12px', textAlign: 'left', fontWeight: '600', color: '#495057' };
 const tdStyle = { padding: '12px', verticalAlign: 'middle', color: '#212529' };
 const getStatusBadgeStyle = (status) => {

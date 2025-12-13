@@ -102,20 +102,41 @@ function Navbar() {
 
           {/* SADECE ADMIN GÖRÜR */}
           {isAdmin && (
-             <Link 
-               to="/admin/orders" 
-               style={{ 
-                 ...linkStyle, 
-                 color: '#ff4444',
-                 fontWeight: 'bold',
-                 border: '1px solid #ff4444',
-                 borderRadius: '5px',
-                 padding: '5px 10px',
-                 marginLeft: '10px'
-               }}
-             >
-               🛠️ Yönetim
-             </Link>
+            <div style={{ display: 'flex', gap: '10px', marginLeft: '15px', alignItems: 'center' }}>
+                {/* Sipariş Yönetimi */}
+                <Link 
+                  to="/admin/orders" 
+                  style={{ 
+                    textDecoration: 'none',
+                    color: '#ff4444', // Kırmızı ton
+                    fontWeight: 'bold',
+                    border: '1px solid #ff4444',
+                    padding: '6px 12px',
+                    borderRadius: '5px',
+                    fontSize: '0.9rem',
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  📦 Siparişler
+                </Link>
+
+                {/* Ürün Yönetimi */}
+                <Link 
+                  to="/admin/products" 
+                  style={{ 
+                    textDecoration: 'none',
+                    color: '#ff4444',
+                    fontWeight: 'bold',
+                    border: '1px solid #ff4444',
+                    padding: '6px 12px',
+                    borderRadius: '5px',
+                    fontSize: '0.9rem',
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  🏷️ Ürünler
+                </Link>
+            </div>
           )}
           
           {username ? (

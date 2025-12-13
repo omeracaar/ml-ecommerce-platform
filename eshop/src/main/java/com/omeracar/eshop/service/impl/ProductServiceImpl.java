@@ -101,7 +101,7 @@ public class ProductServiceImpl implements IProductService {
         if (!existingProduct.getCategory().getId().equals(updateDto.getCategoryId())){
             Category category=categoryRepository.findById(updateDto.getCategoryId())
                     .orElseThrow(()->new ResourceNotFoundException("Category","id",updateDto.getCategoryId()));
-            existingProduct.setCategory(new Category());
+            existingProduct.setCategory(category);
         }
 
         Product updatedProduct=productRepository.save(existingProduct);

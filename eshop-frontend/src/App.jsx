@@ -7,9 +7,10 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminOrdersPage from './pages/AdminOrdersPage';
-
-import './App.css'; 
 import ProductDetailPage from './pages/ProductDetailPage';
+
+import AdminProductsPage from './pages/AdminProductsPage';
+import './App.css'; 
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/product/:productId" element={<ProductDetailPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin/products" element={<AdminProductsPage />} />
           <Route path="/admin/orders" element={<AdminOrdersPage />} />
         </Routes>
       </div>

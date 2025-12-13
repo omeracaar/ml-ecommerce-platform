@@ -1,20 +1,15 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
-import AddressSelector from '../components/AddressSelector';
 
 function CartPage() {
   const [cart, setCart] = useState(null); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  const [showAddressModal, setShowAddressModal] = useState(false);
-  const [newAddress, setNewAddress] = useState('');
-
-
   const navigate = useNavigate();
 
-  // backend den cektim
+  //sepeti backendden cek
   const fetchCart = async () => {
     try {
       const response = await api.get('/cart');
@@ -33,9 +28,9 @@ function CartPage() {
     fetchCart();
   }, []);
 
-  //miktar guncelleme
+  //miktar guncelle
   const handleUpdateQuantity = async (itemId, newQuantity) => {
-    if (newQuantity < 1) return; // 1'in altına düşmesin
+    if (newQuantity < 1) return; 
 
     try {
       const response = await api.put(`/cart/items/${itemId}`, null, {
@@ -50,7 +45,7 @@ function CartPage() {
     }
   };
 
-  //sepetten silme
+  //sepetten sil
   const handleRemoveItem = async (itemId) => {
     if (!window.confirm("Bu ürünü sepetten silmek istiyor musunuz?")) return;
 
@@ -64,7 +59,7 @@ function CartPage() {
     }
   };
 
-  //sepeti bosaltma
+  //sepeti bosalt
   const handleClearCart = async () => {
     if (!window.confirm("Tüm sepeti boşaltmak istediğinize emin misiniz?")) return;
 
@@ -78,41 +73,10 @@ function CartPage() {
     }
   };
 
-  const handleCheckoutClick = () => {
-    // Direkt sipariş oluşturmak yerine Modal'ı aç
-    setShowAddressModal(true);
-  };
-
-  //modaldaki onayla buttonu
-  const confirmOrder = async () => {
-    if (!newAddress || newAddress.length < 10) {
-      alert("Lütfen geçerli bir adres seçiniz.");
-      return;
-    }
-
-    try {
-      // Backend'e seçilen adresi gönderiyoruz
-      const response = await api.post('/orders', null, {
-        params: { shippingAddress: newAddress } 
-      });
-
-      if (response.data.status === 201) {
-        alert(`Siparişiniz alındı! 🎉\nTeslimat Adresi: ${response.data.payload.shippingAddress}`);
-        setCart(null);
-        setShowAddressModal(false); // Modalı kapat
-        navigate('/');
-      }
-    } catch (err) {
-      console.error("Sipariş hatası:", err);
-      alert("Hata: " + (err.response?.data?.errorMessage || "İşlem başarısız."));
-    }
-  };
-
+  //yukleniyor veya hata durumu
   if (loading) return <div style={{textAlign:'center', marginTop:'50px'}}>Sepet yükleniyor...</div>;
   if (error) return <div style={{textAlign:'center', marginTop:'50px', color:'red'}}>{error}</div>;
 
-
-  
   //sepet bossa
   if (!cart || cart.cartItems.length === 0) {
     return (
@@ -128,24 +92,26 @@ function CartPage() {
     );
   }
 
-  //doluysa
+  //sepet doluysa
   return (
-    <div style={{ maxWidth: '800px', margin: '20px auto', padding: '20px', position: 'relative' }}>
-      <h2>Sepetim ({cart.totalItems} Ürün)</h2>
+    <div style={{ maxWidth: '1000px', margin: '40px auto', padding: '20px' }}>
+      <h1>Sepetim ({cart.totalItems} Ürün)</h1>
       
+      {/*urun listesi*/}
       <div style={{ borderTop: '1px solid #eee' }}>
         {cart.cartItems.map((item) => (
-          <div key={item.id} style={{ display: 'flex', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #eee' }}>
-            {/*ürün resmi*/}
+          <div key={item.id} style={{ display: 'flex', alignItems: 'center', padding: '20px 0', borderBottom: '1px solid #eee' }}>
+            
+            {/*urun resmi*/}
             <img src={item.imageUrl} alt={item.productName} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '5px', marginRight: '20px' }} />
             
-            {/*ürün bilgisi*/}
+            {/*urun bilgisi*/}
             <div style={{ flex: 1 }}>
-              <h4 style={{ margin: '0 0 5px 0' }}>{item.productName}</h4>
+              <h4 style={{ margin: '0 0 5px 0', fontSize: '1.1rem' }}>{item.productName}</h4>
               <span style={{ color: '#888' }}>Birim Fiyat: {item.price} TL</span>
             </div>
 
-            {/* miktar kontrolü*/}
+            {/*miktar kontrolu*/}
             <div style={{ display: 'flex', alignItems: 'center', marginRight: '30px' }}>
               <button 
                 onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
@@ -153,7 +119,7 @@ function CartPage() {
                 disabled={item.quantity <= 1}
               >-</button>
               
-              <span style={{ margin: '0 10px', fontWeight: 'bold' }}>{item.quantity}</span>
+              <span style={{ margin: '0 15px', fontWeight: 'bold', fontSize: '1.1rem' }}>{item.quantity}</span>
               
               <button 
                 onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
@@ -161,15 +127,16 @@ function CartPage() {
               >+</button>
             </div>
 
-            {/*toplam fiyat */}
-            <div style={{ width: '100px', fontWeight: 'bold', textAlign: 'right', marginRight: '20px' }}>
+            {/*toplam fiyat*/}
+            <div style={{ width: '120px', fontWeight: 'bold', textAlign: 'right', marginRight: '20px', fontSize: '1.1rem' }}>
               {item.lineTotal.toFixed(2)} TL
             </div>
 
             {/*sil*/}
             <button 
               onClick={() => handleRemoveItem(item.id)}
-              style={{ color: 'red', background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px' }}
+              style={{ color: '#dc3545', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', padding: '5px' }}
+              title="Sepetten Sil"
             >
               🗑️
             </button>
@@ -177,81 +144,57 @@ function CartPage() {
         ))}
       </div>
 
-      <div style={{ marginTop: '30px', textAlign: 'right' }}>
-        <h3>Toplam Tutar: {cart.totalPrice.toFixed(2)} TL</h3>
+      {/*alt kisim ve butonlar*/}
+      <div style={{ marginTop: '30px', textAlign: 'right', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '10px' }}>
+        <h2 style={{ fontSize: '2rem', margin: '0 0 20px 0' }}>
+          Toplam: <span style={{ color: '#28a745' }}>{cart.totalPrice.toFixed(2)} TL</span>
+        </h2>
         
-        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '15px', alignItems: 'center' }}>
           <button 
             onClick={handleClearCart}
-            style={{ padding: '10px 20px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+            style={{ padding: '10px 20px', backgroundColor: 'transparent', color: '#dc3545', border: '1px solid #dc3545', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}
           >
             Sepeti Temizle
           </button>
           
-          {/*siparisi tamamla*/}
+          {/* checkouta git*/}
           <button 
-            onClick={handleCheckoutClick} 
-            style={{ padding: '10px 30px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '16px' }}
+            onClick={() => navigate('/checkout')} 
+            style={{ 
+              padding: '15px 40px', 
+              backgroundColor: '#FFD700', // Gold Tema
+              color: '#000', 
+              border: 'none', 
+              borderRadius: '8px', 
+              cursor: 'pointer', 
+              fontSize: '1.2rem',
+              fontWeight: 'bold',
+              boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+            }}
           >
-            Siparişi Tamamla
+            Siparişi Tamamla &rarr;
           </button>
         </div>
       </div>
-
-      {/*address modal i*/}
-      {showAddressModal && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
-        }}>
-          <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', width: '400px', maxWidth: '90%', boxShadow: '0 4px 8px rgba(0,0,0,0.2)' }}>
-            <h3 style={{marginTop: 0}}>Teslimat Adresi Seçimi</h3>
-            <p style={{fontSize:'0.9rem', color:'#666', marginBottom: '20px'}}>Lütfen siparişin gönderileceği adresi belirleyin.</p>
-            
-            {/* Reusable Component*/}
-            <AddressSelector onAddressChange={(addr) => setNewAddress(addr)} />
-
-            <div style={{ marginTop: '25px', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-              <button 
-                onClick={() => setShowAddressModal(false)}
-                style={{ padding: '8px 15px', backgroundColor: '#ccc', border: 'none', borderRadius: '4px', cursor:'pointer' }}
-              >
-                İptal
-              </button>
-              <button 
-                onClick={confirmOrder}
-                disabled={!newAddress} // adres yoksa butonu pasif yap
-                style={{ 
-                  padding: '8px 15px', 
-                  backgroundColor: newAddress ? '#28a745' : '#99daa6', 
-                  color: 'white', border: 'none', borderRadius: '4px', cursor: newAddress ? 'pointer' : 'not-allowed' 
-                }}
-              >
-                Siparişi Onayla
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* ---------------------------------------------- */}
 
     </div>
   );
 }
 
+//btn style
 const btnStyle = {
-  width: '30px',
-  height: '30px',
+  width: '32px',
+  height: '32px',
   display: 'flex',
-  lineHeight: "5px",
   alignItems: 'center',
   justifyContent: 'center',
-  border: '1px solid #ccc',
-  backgroundColor: '#f8f9fa',
+  border: '1px solid #ddd',
+  backgroundColor: 'white',
   cursor: 'pointer',
   borderRadius: '4px',
-  padding: 0,       
-  margin: 0,
+  fontSize: '1.2rem',
+  color: '#333'
 };
 
 export default CartPage;

@@ -1,17 +1,3 @@
-DELETE FROM order_items;
-DELETE FROM cart_items;
-DELETE FROM orders;
-DELETE FROM carts;
-DELETE FROM products;
-DELETE FROM categories;
-DELETE FROM app_user;
-
-ALTER SEQUENCE categories_id_seq RESTART WITH 1;
-ALTER SEQUENCE carts_id_seq RESTART WITH 1;
-ALTER SEQUENCE cart_items_id_seq RESTART WITH 1;
-ALTER SEQUENCE orders_id_seq RESTART WITH 1;
-ALTER SEQUENCE order_items_id_seq RESTART WITH 1;
-
 INSERT INTO app_user (id, username, email, password, role, first_name, last_name, phone_number, address) VALUES
 ('U-ADMIN', 'admin', 'admin@eshop.com', '$2a$12$xlPt8OCeK5kSL3cmlXZDfOJqf8hPiXsIh9TwFEs9y4c2t68G5a.Am', 'ADMIN', 'Admin', 'User', '5551112233', 'Merkez Ofis'),
 ('U-1', 'omer', 'omer@mail.com', '$2a$12$xlPt8OCeK5kSL3cmlXZDfOJqf8hPiXsIh9TwFEs9y4c2t68G5a.Am', 'USER', 'Ömer', 'Acar', '5554445566', 'Antalya'),

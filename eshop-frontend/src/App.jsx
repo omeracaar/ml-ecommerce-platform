@@ -16,6 +16,7 @@ function App() {
   return (
     <>
       <Navbar /> 
+      <div style={{ padding: '20px', paddingTop: '12px', minHeight: '1vh' }}></div>
       
       <div style={{ padding: '20px' }}>
         <Routes>

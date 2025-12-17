@@ -56,9 +56,12 @@ function Navbar() {
     justifyContent: 'space-between',
     alignItems: 'center',
     boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
-    position: 'sticky',
+    position: 'fixed', 
     top: 0,
-    zIndex: 1000
+    left: 0,           
+    width: '100%',     
+    zIndex: 1000,
+    boxSizing: 'border-box' 
   };
 
   const menuBtnStyle = {

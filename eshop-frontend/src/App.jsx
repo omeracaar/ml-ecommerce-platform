@@ -8,7 +8,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminOrdersPage from './pages/AdminOrdersPage';
 import ProductDetailPage from './pages/ProductDetailPage';
-
+import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminProductsPage from './pages/AdminProductsPage';
 import './App.css'; 
 
@@ -30,6 +30,7 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin/products" element={<AdminProductsPage />} />
           <Route path="/admin/orders" element={<AdminOrdersPage />} />
+          <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         </Routes>
       </div>
     </>

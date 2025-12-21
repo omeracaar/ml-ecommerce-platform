@@ -4,7 +4,6 @@ from surprise import Reader, Dataset # Bunlar da SVD için gerekebilir
 
 print("Kaydedilmiş 'model.pkl' dosyası yükleniyor...")
 
-# 1. 'odev.py'nin kaydettiği 'beyni' (modeli) diskten yükle
 try:
     with open('model.pkl', 'rb') as f:
         final_model = pickle.load(f)

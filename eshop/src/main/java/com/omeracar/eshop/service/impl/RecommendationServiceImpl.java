@@ -12,9 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 public class RecommendationServiceImpl implements IRecommendationService {
 
-    private static final Logger logger= LoggerFactory.getLogger(RecommendationServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(RecommendationServiceImpl.class);
 
     @Autowired
     private RestTemplate restTemplate;
@@ -34,11 +35,14 @@ public class RecommendationServiceImpl implements IRecommendationService {
     @Autowired
     private ProductRepository productRepository;
 
-    //!!
     @Value("${recommendation.api.url:http://localhost:5000/recommend}")
     private String recommendationApiUrl;
 
-    private static final String DEMO_KAGGLE_USER_ID="C17270";
+
+    private static final String GUEST_MODE_ID = "C17603";
+
+
+    private static final String LOGGED_IN_MODE_ID = "C17270";
 
     @Transactional(readOnly = true)
     protected ProductResponseDto convertProductToDto(Product product){
@@ -59,67 +63,74 @@ public class RecommendationServiceImpl implements IRecommendationService {
     @Override
     @Transactional(readOnly = true)
     public List<ProductResponseDto> getRecommendationsForCurrentUser() {
-        logger.info("demo kullanici id'si: '{} icin oneriler getiriliyor",DEMO_KAGGLE_USER_ID);
 
-        List<String> recommendedProductIds=null;
-        ResponseEntity<List<String>> response=null;
+        String userIdToSend;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean isLoggedIn = authentication != null &&
+                authentication.isAuthenticated() &&
+                !"anonymousUser".equals(authentication.getPrincipal());
+
+        if (isLoggedIn) {
+            // Kullanıcı giriş yapmış
+            String currentUsername = authentication.getName();
+            logger.info("Kullanıcı GİRİŞ YAPMIŞ: {}. ML Modeli için '{}' ID'si kullanılacak.", currentUsername, LOGGED_IN_MODE_ID);
+            userIdToSend = LOGGED_IN_MODE_ID;
+        } else {
+            // Misafir kullanıcı
+            logger.info("Kullanıcı MİSAFİR. ML Modeli için '{}' ID'si kullanılacak.", GUEST_MODE_ID);
+            userIdToSend = GUEST_MODE_ID;
+        }
+
+        List<String> recommendedProductIds = null;
         try {
-            String url=recommendationApiUrl + "?user_id=" + DEMO_KAGGLE_USER_ID;
-            logger.info("python ml api a istek atiliyor: {}",url);
+            String url = recommendationApiUrl + "?user_id=" + userIdToSend;
+            logger.info("Python ML API isteği: {}", url);
 
-            response = restTemplate.exchange(
+            ResponseEntity<List<String>> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
                     null,
                     new ParameterizedTypeReference<List<String>>() {}
             );
-            logger.info("ml api cevabi alindi status: {}",response.getStatusCode());
 
-            if (response.getStatusCode().is2xxSuccessful()){
-                recommendedProductIds=response.getBody();
-                if (recommendedProductIds!=null){
-                    logger.info("ml api den alinan body (id listesi) {} ",recommendedProductIds);
-                if (recommendedProductIds.isEmpty()){
-                    logger.info("ml api bos oneri listesi dondurdu");
-                    return Collections.emptyList();
-                }
-                }else {
-                    logger.info("ml api den 2xx status alindi ama response body null geldi");
-                    return Collections.emptyList();
-                }
-            }else {
-                logger.info("ml apisinden basarisiz status code alindi: {}. Body: {}",response.getStatusCode(),response.getBody());
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null){
+                recommendedProductIds = response.getBody();
+            } else {
                 return Collections.emptyList();
             }
-        }catch (RestClientException e){
-            String responseBodyLog = "Alınamadı";
-            if (e.getCause() instanceof org.springframework.web.client.HttpClientErrorException ex){responseBodyLog=ex.getResponseBodyAsString();}
-            else if (e.getCause() instanceof org.springframework.web.client.HttpServerErrorException ex) { responseBodyLog = ex.getResponseBodyAsString();}
-            logger.info("ML API'sine bağlanırken veya cevap işlenirken hata oluştu: {} - Dönen Body: {}", e.getMessage(), responseBodyLog, e);
-            return Collections.emptyList();
-        }catch (Exception e){
-            logger.info("Öneriler getirilirken beklenmedik bir hata oluştu!",e);
+        } catch (Exception e){
+            logger.error("ML API Hatası: {}", e.getMessage());
             return Collections.emptyList();
         }
 
-        logger.info("Alınan ID'ler DB'de filtrelenecek: {}", recommendedProductIds);
+        if (recommendedProductIds == null || recommendedProductIds.isEmpty()) {
+            logger.warn("UYARI: Python API boş liste döndürdü!");
+            return Collections.emptyList();
+        }
+
+        logger.info("1. Python ML Modeli {} adet ID önerdi.", recommendedProductIds.size());
+        logger.info("2. Python'dan gelen ID Listesi: {}", recommendedProductIds);
+
         List<Product> foundProducts = productRepository.findAllById(recommendedProductIds);
-        logger.info("db de bulunan {} adet urun bilgisi cekildi",foundProducts.size());
-        if (foundProducts.isEmpty()){
-            logger.info("ML API'sinin önerdiği ID'lerden HİÇBİRİ veritabanında bulunamadı!");
-            return Collections.emptyList();
+
+        logger.info("3. Bu ID'lerden veritabanında bulunan ürün sayısı: {}", foundProducts.size());
+
+        if (foundProducts.size() < recommendedProductIds.size()) {
+            logger.warn("Python {} ürün önerdi ama DB de sadece {} tanesi bulundu.",
+                    recommendedProductIds.size(), foundProducts.size());
+
+            // Veritabanında OLMAYANLARI görmek için:
+            List<String> foundIds = foundProducts.stream().map(Product::getId).toList();
+            logger.info("DB'de BULUNAN ID'ler: {}", foundIds);
         }
+        Map<String,Product> productMap = foundProducts.stream()
+                .collect(Collectors.toMap(Product::getId, product -> product));
 
-        Map<String,Product> productMap=foundProducts.stream()
-                .collect(Collectors.toMap(Product::getId,product -> product));
-
-        List<ProductResponseDto> productResponseDto=recommendedProductIds.stream()
+        return recommendedProductIds.stream()
                 .map(productMap::get)
-                .filter(product -> product !=null)
+                .filter(java.util.Objects::nonNull)
                 .map(this::convertProductToDto)
                 .collect(Collectors.toList());
-
-        logger.info("'{}' icin {} adet filtrenmis ve siralanmis oneri bulundu",DEMO_KAGGLE_USER_ID,productResponseDto.size());
-        return productResponseDto;
     }
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../api';
 
@@ -11,10 +11,12 @@ function HomePage() {
   const [totalPages, setTotalPages] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   
+  const sliderRef = useRef(null);
+
   const currentPage = parseInt(searchParams.get('page') || '0');
   const selectedCategoryId = parseInt(searchParams.get('categoryId') || '0');
 
-  //kategori cek
+  // Kategori çek
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -31,7 +33,7 @@ function HomePage() {
   }, []);
 
 
-  //urunleri cek
+  // Ürünleri çek
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -63,18 +65,18 @@ function HomePage() {
   }, [currentPage, selectedCategoryId]);
 
 
-  //--ml e hazirlik
+  // -- ML Öneri Çekme --
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token && selectedCategoryId === 0) {
+    if (selectedCategoryId === 0) {
       const fetchRecommendations = async () => {
         try {
           const response = await api.get('/products/recommendations');
           if (response.data && response.data.status === 200) {
-            setRecommendations(response.data.payload);
+            setRecommendations(response.data.payload || []);
           }
         } catch (err) {
           console.error("Öneri getirme hatası:", err);
+          setRecommendations([]);
         }
       };
       fetchRecommendations();
@@ -83,7 +85,19 @@ function HomePage() {
     }
   }, [selectedCategoryId]); 
 
-  //sepete ekleme
+  const scrollSlider = (direction) => {
+    if(sliderRef.current){
+        const { current } = sliderRef;
+        const scrollAmount = 250; 
+        if(direction === 'left'){
+            current.scrollLeft -= scrollAmount;
+        } else {
+            current.scrollLeft += scrollAmount;
+        }
+    }
+  };
+
+  // Sepete ekleme
   const handleAddToCart = async (productId) => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -105,56 +119,117 @@ function HomePage() {
   if (loading && products.length === 0) return <div style={{textAlign:'center', marginTop:'20px'}}>Yükleniyor...</div>;
   if (error) return <div style={{textAlign:'center', marginTop:'20px', color:'red'}}>Hata: {error}</div>;
 
-  // urun karti
-  const ProductCard = ({ product, isRecommendation = false }) => (
-    <div key={product.id} style={isRecommendation ? recCardStyle : cardStyle}>
+  const ProductCard = ({ product, isRecommendation = false }) => {
+    const currentCardStyle = isRecommendation ? smallRecCardStyle : cardStyle;
+    const currentImgHeight = isRecommendation ? smallImgHeight : normalImgHeight;
+    const currentTitleSize = isRecommendation ? smallTitleSize : normalTitleSize;
+    const currentPriceSize = isRecommendation ? smallPriceSize : normalPriceSize;
+
+    return (
+    <div key={product.id} style={currentCardStyle}>
       {isRecommendation && <div style={recTagStyle}>Sana Özel ✨</div>}
       
       <Link to={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <img src={product.imageUrl} alt={product.name} style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius:'4px' }} />
-        <h3 style={{fontSize:'1.1rem', margin:'10px 0', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden',color: '#333'}} title={product.name}>{product.name}</h3>
+        <img 
+            src={product.imageUrl} 
+            alt={product.name} 
+            style={{ width: '100%', height: currentImgHeight, objectFit: 'cover', borderRadius:'4px' }} 
+        />
+        <h3 
+            style={{fontSize: currentTitleSize, margin:'8px 0', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden',color: '#333'}} 
+            title={product.name}
+        >
+            {product.name}
+        </h3>
       </Link>
 
-      <p style={{color:'#555', fontSize:'0.9rem', height:'40px', overflow:'hidden'}}>{product.description}</p>
+      <p style={{color:'#666', fontSize:'0.8rem', height:'32px', overflow:'hidden', marginBottom:'5px', lineHeight:'1.2'}}>
+        {product.description}
+      </p>
       
-      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'10px'}}>
-        <span style={{fontWeight:'bold', fontSize:'1.2rem', color:'#28a745'}}>{product.price} TL</span>
-        <span style={{fontSize:'0.8rem', color:'#888'}}>{product.categoryName}</span>
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'5px'}}>
+        <span style={{fontWeight:'bold', fontSize: currentPriceSize, color:'#28a745'}}>{product.price} TL</span>
+        {!isRecommendation && <span style={{fontSize:'0.8rem', color:'#888'}}>{product.categoryName}</span>}
       </div>
       
       <button 
         onClick={() => handleAddToCart(product.id)}
-        style={{ marginTop: '15px', width: '100%', padding: '10px', cursor: 'pointer', backgroundColor: isRecommendation ? '#ffc107' : '#007bff', color: isRecommendation ? 'black' : 'white', border:'none', borderRadius:'5px', fontWeight:'bold' }}
+        style={{ 
+            marginTop: '10px', 
+            width: '100%', 
+            padding: isRecommendation ? '6px' : '10px', 
+            cursor: 'pointer', 
+            backgroundColor: isRecommendation ? '#ffc107' : '#007bff', 
+            color: isRecommendation ? 'black' : 'white', 
+            border:'none', 
+            borderRadius:'5px', 
+            fontWeight:'bold',
+            fontSize: isRecommendation ? '0.85rem' : '1rem'
+        }}
       >
         Sepete Ekle
       </button>
     </div>
-  );
+  )};
 
 
   return (
     <div className="HomePage" style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '50px' }}>
       
-
       {recommendations.length > 0 && selectedCategoryId === 0 && (
         <div style={recommendationSectionStyle}>
           <h2 style={recommendationTitleStyle}>
-            ✨ Sizin İçin Seçtiklerimiz ✨
+             Sizin İçin Seçtiklerimiz
           </h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
-            {recommendations.map(product => (
-              <ProductCard key={product.id} product={product} isRecommendation={true} />
-            ))}
+          
+          <div style={{ position: 'relative', padding: '0 10px' }}>
+            
+            {/* SOL BUTON */}
+            <button 
+                onClick={() => scrollSlider('left')} 
+                style={{ ...sliderBtnStyle, left: '-20px' }}
+            >
+                &#10094;
+            </button>
+
+            {/* Scroll Container */}
+            <div 
+                ref={sliderRef}
+                style={{ 
+                    display: 'flex', 
+                    gap: '30px',
+                    padding: '20px 5px', 
+                    overflowX: 'auto', 
+                    scrollBehavior: 'smooth',
+                    flexWrap: 'nowrap',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
+                }}
+                className="hide-scrollbar"
+            >
+                {recommendations.map(product => (
+                <div key={product.id} style={{ minWidth: smallCardWidth }}>
+                     <ProductCard product={product} isRecommendation={true} />
+                </div>
+                ))}
+            </div>
+
+            <button 
+                onClick={() => scrollSlider('right')} 
+                style={{ ...sliderBtnStyle, right: '-20px' }}
+            >
+                &#10095;
+            </button>
+
           </div>
         </div>
       )}
 
-      {/*urun listesi*/}
-      <h1 style={{textAlign:'center', marginBottom: '30px', marginTop:'40px', color: '#333'}}>
+      <h1 style={{textAlign:'center', marginBottom: '30px', marginTop:'30px', color: '#333', fontSize: '1.8rem'}}>
         {categories.find(c => c.id === selectedCategoryId)?.name || "Ürünler"}
       </h1>
       
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '25px', justifyContent: 'center' }}>
         {products.length > 0 ? (
           products.map(product => (
             <ProductCard key={product.id} product={product} />
@@ -164,10 +239,8 @@ function HomePage() {
         )}
       </div>
 
-      {/*page kontrolleri*/}
       {totalPages > 1 && (
         <div style={{ margin: '40px 0', display: 'flex', justifyContent: 'center', gap: '10px' }}>
-          
           <button 
             onClick={() => setSearchParams({ page: Math.max(0, currentPage - 1), categoryId: selectedCategoryId })}
             disabled={currentPage === 0}
@@ -200,15 +273,58 @@ function HomePage() {
           </button>
         </div>
       )}
+
+      <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
     </div>
   );
 }
 
+
+const normalCardWidth = '240px'; 
+const normalImgHeight = '180px';
+const normalTitleSize = '1.1rem';
+const normalPriceSize = '1.2rem';
+
+const cardStyle = { border:'1px solid #e0e0e0', borderRadius:'8px', padding: '15px', width: normalCardWidth, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', backgroundColor: 'white', position: 'relative', transition: 'transform 0.2s' };
+
+const smallCardWidth = '170px'; 
+const smallImgHeight = '120px';
+const smallTitleSize = '0.9rem';
+const smallPriceSize = '1rem';
+
+const smallRecCardStyle = { 
+    ...cardStyle, 
+    width: smallCardWidth,
+    padding: '10px', 
+    border: '2px solid #ffc107', 
+    boxShadow: '0 4px 12px rgba(255, 193, 7, 0.25)', 
+    backgroundColor: '#fffdf5' 
+};
+
 const pageBtnStyle = { padding: '8px 12px', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', transition: 'all 0.2s' };
-const recommendationSectionStyle = { marginTop: '20px', marginBottom: '50px', padding: '20px', backgroundColor: '#fff', borderRadius: '15px', border: '1px solid #ffc107', boxShadow: '0 0 20px rgba(255, 193, 7, 0.1)' };
-const recommendationTitleStyle = { textAlign: 'center', color: '#333', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' };
-const cardStyle = { border:'1px solid #e0e0e0', borderRadius:'8px', padding: '15px', width: '220px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)', backgroundColor: 'white', position: 'relative', transition: 'transform 0.2s' };
-const recCardStyle = { ...cardStyle, border: '2px solid #ffc107', boxShadow: '0 4px 15px rgba(255, 193, 7, 0.4)', backgroundColor: '#fffdf5' };
-const recTagStyle = { position: 'absolute', top: '-10px', right: '-10px', backgroundColor: '#ffc107', color: '#000', padding: '5px 10px', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.8rem', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' };
+const recommendationSectionStyle = { marginTop: '20px', marginBottom: '30px', padding: '0 10px', backgroundColor: '#fff', borderRadius: '15px', border: '1px solid #ffc107', boxShadow: '0 0 15px rgba(255, 193, 7, 0.1)' };
+const recommendationTitleStyle = { textAlign: 'center', color: '#333', marginBottom: '5px', marginTop:'20px', fontSize:'1.4rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' };
+const recTagStyle = { position: 'absolute', top: '-10px', right: '-5px', backgroundColor: '#ffc107', color: '#000', padding: '3px 8px', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.65rem', boxShadow: '0 2px 5px rgba(0,0,0,0.15)', zIndex:2 };
+
+const sliderBtnStyle = {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    backgroundColor: '#333',
+    color: 'white',
+    border: 'none',
+    borderRadius: '50%',
+    width: '40px',
+    height: '40px',
+    cursor: 'pointer',
+    zIndex: 10,
+    fontSize: '1.2rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.8,
+    transition: 'opacity 0.3s',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.3)'
+};
 
 export default HomePage;

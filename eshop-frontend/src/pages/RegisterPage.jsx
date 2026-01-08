@@ -14,7 +14,6 @@ function RegisterPage() {
     firstName: '',
     lastName: '',
     phoneNumber: '',
-    address: ''
   });
 
   const [error, setError] = useState(null);
@@ -112,14 +111,6 @@ function RegisterPage() {
           <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} style={inputStyle} />
         </div>
 
-        {/* YENİSİ: */}
-        <div style={{ marginBottom: '15px', border: '1px solid #eee', padding: '10px', borderRadius: '5px' }}>
-          <h4 style={{marginTop:0}}>Adres Bilgileri (İsteğe Bağlı)</h4>
-          <AddressSelector onAddressChange={(fullAddr) => {
-            // Gelen birleşmiş adresi formData'ya set et
-            setFormData(prev => ({ ...prev, address: fullAddr }));
-          }} />
-        </div>
 
         <button type="submit" style={buttonStyle}>Kayıt Ol</button>
       </form>

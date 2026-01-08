@@ -69,4 +69,27 @@ INSERT INTO products (id, name, description, price, stock_quantity, image_url, c
 ('P248229', 'Önerilen Ürün 1', 'ML Modelinden Geldi', 100.00, 10, 'https://picsum.photos/seed/rec1/400', 3);
 
 INSERT INTO products (id, name, description, price, stock_quantity, image_url, category_id) VALUES
-('P211187', 'Önerilen Ürün 2', 'Bu da ML denemesi', 250.00, 5, 'https://picsum.photos/seed/rec8/400', 5);
+('P211187', 'Faber Castell Uçlu Kalem, 'Bu da ML denemesi', 250.00, 5, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRinEc6BsnqkbzOvjM6lcVwnF5LiGYQpBEaxg&s', 5);
+
+
+INSERT INTO products (id, name, description, price, stock_quantity, image_url, category_id, brand) VALUES
+
+('P208066', 'JBL Taşınabilir Hoparlör', 'Suya dayanıklı, 10 saat pil ömrü', 2499.00, 40, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDN0LMonvoLT3QqRMAh2UsLhitUD2wewXv8g&s', 1, 'JBL'),
+('P230545', 'Filtre Kahve Makinesi', 'Otomatik damlatma, zaman ayarlı', 1850.00, 25, 'https://statics.vestel.com.tr/productimages/20244208_r1_1000_1000.jpg', 3, 'Philips'),
+('P205634', 'Koşu Ayakkabısı', 'Yüksek taban rahat koşu ayakkabısı', 3200.00, 30, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZFSNfeVbK9At1cOXzOcTR_SSfbRUgkO_94A&s', 2, 'Nike'),
+('P239718', 'Akıllı Saat Kordonu', 'Silikon, ayarlanabilir, siyah', 250.00, 100, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2w12oFxAVZagHpWpLPhxVOaoQyhjTHs2PMg&s', 1, 'Apple'),
+('P213838', 'Yoga ve Pilates Matı', 'Kaymaz yüzey, 10mm kalınlık', 450.00, 50, 'https://productimages.hepsiburada.net/s/777/375-375/110000850330076.jpg', 5, 'Decathlon'),
+('P207595', 'Smoothie Blender', 'Buz kırma özellikli kişisel blender', 1200.00, 20, 'https://cdn03.ciceksepeti.com/cicek/kcm70952614-1/XL/karaca-inox-1.5-lt-cam-hazneli-smoothie-blender-kcm70952614-1-c5048ce72efa41a38b7aacc304eb0f81.jpg', 3, 'Arzum'),
+('P242018', 'Cilt Bakım Serumu', 'C vitamini içeren aydınlatıcı serum', 550.00, 60, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYUSB2dK_AO1jAhw5BiNVzwPvt6rLHdhe7kw&s', 4, 'Loreal'),
+('P211416', 'Monopoly Kutu Oyunu', 'Klasik aile oyunu, Türkçe', 850.00, 40, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSNd4qgaU6oLMCgiWRYzBMEHiX_uprev-IRQ&s', 6, 'Hasbro'),
+('P213133', 'Organik Çiçek Balı', 'Yayla balı, katkısız 500gr', 350.00, 80, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQP1beqJEWqeDUGFatFLvqVRT5eMxNKEINYYQ&s', 7, 'Generic'),
+
+('P207071', 'Tablet Kılıfı 11"', 'Darbe emici silikon koruma', 300.00, 90, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDDLhPnQJ56vQB29bQdolI0-je8UEUrWuysA&s', 1, 'Spigen'),
+('P243781', 'Ergonomik Ofis Koltuğu', 'Bel destekli fileli sandalye', 4500.00, 15, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3ZWrGfLrAHR3ljn7Xb8gRkr0ZWgT_PfGvnw&s', 3, 'Ikea'),
+('P222065', 'Dambıl Seti 5kg', 'Neopren kaplı 2 adet ağırlık', 600.00, 35, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBb4VrbbSEGVuLNhZn0U8N3PVCsiG5JcmBAQ&s', 5, 'Generic'),
+('P225154', 'Erkek Parfüm EDP', 'Odunsu ve baharatlı koku 100ml', 1400.00, 45, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtik3kRnrr1yUkWmm4X1y7uRvxqmX7qtTrgA&s', 4, 'Zara'),
+('P239651', 'Vintage Kot Ceket', 'Oversize kesim denim ceket', 1800.00, 25, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4gXgWfHIbcwSD8HOEGzM2cXwtNwHYJqdd7g&s', 2, 'Mavi'),
+('P213236', '4K Aksiyon Kamerası', 'Su altı çekim, wifi özellikli', 5500.00, 10, 'https://productimages.hepsiburada.net/s/495/375-375/110000546134298.jpg', 1, 'GoPro'),
+('P230072', 'Kamp Çadırı 3 Kişilik', 'Otomatik kurulum, su geçirmez', 2200.00, 20, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRlb_b6iJGtoJm1KcYxAcR5yCvLZzqP8xzsQ&s', 5, 'Decathlon'),
+('P239883', 'Mutfak Şefi Mikser', 'Hamur yoğurma, çırpma', 3500.00, 12, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_-RUm5OxTz0ox8CkhEPTeXaIh1t2Y27fxjg&s', 3, 'KitchenAid'),
+('P229838', 'Güneş Gözlüğü', 'Polarize camlı, UV400 koruma', 1100.00, 55, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQE7YWP28qJW1EwGkH8X_-dldZFLg27ZRJpVw&s', 2, 'RayBan');

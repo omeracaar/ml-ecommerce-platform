@@ -7,7 +7,6 @@ function AdminProductsPage() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
-  // --- PAGINATION STATE ---
   const [page, setPage] = useState(0);      
   const [totalPages, setTotalPages] = useState(0); 
   const pageSize = 10;                       
@@ -227,8 +226,8 @@ function AdminProductsPage() {
 }
 
 //style
-const formContainerStyle = { backgroundColor: '#fff', padding: '25px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' };
-const gridFormStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' };
+const formContainerStyle = { backgroundColor: '#fff', padding: '15px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' };
+const gridFormStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' };
 const labelStyle = { display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' };
 const inputStyle = { width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' };
 const buttonStyle = { gridColumn: '1 / -1', padding: '10px', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' };
